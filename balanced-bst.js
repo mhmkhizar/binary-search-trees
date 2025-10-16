@@ -6,23 +6,33 @@ function node(data) {
   };
 }
 
-function tree(arr) {
+function tree(arr = []) {
   const _unique = [...new Set(arr)];
   const _sorted = _mergeSort(_unique);
-  const _root = _buildTree(_sorted, 0, _sorted.length - 1);
+  let _root = _sorted.length
+    ? _buildTree(_sorted, 0, _sorted.length - 1)
+    : null;
 
   function getRoot() {
     return _root;
   }
 
-  function insert(value, curr = _root) {
-    if (curr === null) return node(value);
-    if (value < curr.data) {
-      curr.left = insert(value, curr.left);
-    } else {
-      curr.right = insert(value, curr.right);
+  function insert(value) {
+    if (value === undefined) return _root;
+    if (_root === null) {
+      _root = node(value);
+      return _root;
     }
-    return curr;
+    _insertRec(value, _root);
+    return _root;
+  }
+
+  function _insertRec(data, currNode) {
+    if (currNode === null) return node(data);
+    if (data === currNode.data) return currNode;
+    const side = data < currNode.data ? "left" : "right";
+    currNode[side] = _insertRec(data, currNode[side]);
+    return currNode;
   }
 
   function _buildTree(arr, start, end) {
@@ -72,6 +82,5 @@ function tree(arr) {
 
 const numbers = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const t = tree(numbers);
-
-// console.log(t.insert(2));
+t.insert(5);
 t.prettyPrint(t.getRoot());
