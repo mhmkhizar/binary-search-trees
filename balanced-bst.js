@@ -23,16 +23,51 @@ function tree(arr = []) {
       _root = node(value);
       return _root;
     }
-    _insertRec(value, _root);
+    _root = _insertRec(value, _root);
     return _root;
   }
 
-  function _insertRec(data, currNode) {
-    if (currNode === null) return node(data);
-    if (data === currNode.data) return currNode;
-    const side = data < currNode.data ? "left" : "right";
-    currNode[side] = _insertRec(data, currNode[side]);
-    return currNode;
+  function _insertRec(data, curr) {
+    if (curr === null) return node(data);
+    if (data === curr.data) return curr;
+    const side = data < curr.data ? "left" : "right";
+    curr[side] = _insertRec(data, curr[side]);
+    return curr;
+  }
+
+  function deleteItem(value) {
+    if (value === undefined || _root === null) return _root;
+    _root = _deleteItemRec(value, _root);
+    return _root;
+  }
+
+  function _deleteItemRec(data, curr) {
+    if (curr === null) return curr;
+
+    const currHasValue = data === curr.data;
+    const currHasLeft = curr.left !== null;
+    const currHasRight = curr.right !== null;
+
+    if (currHasValue && !currHasLeft && !currHasRight) {
+      curr = null;
+    } else if (currHasValue && (!currHasLeft || !currHasRight)) {
+      curr = currHasLeft ? curr.left : curr.right;
+    } else if (currHasValue && currHasLeft && currHasRight) {
+      let successorParent = curr;
+      let successor = curr.right;
+      while (successor.left !== null) {
+        successorParent = successor;
+        successor = successor.left;
+      }
+      curr.data = successor.data;
+      successorParent === curr
+        ? (successorParent.right = successor.right)
+        : (successorParent.left = successor.right);
+    } else {
+      const side = data < curr.data ? "left" : "right";
+      curr[side] = _deleteItemRec(data, curr[side]);
+    }
+    return curr;
   }
 
   function _buildTree(arr, start, end) {
@@ -77,10 +112,10 @@ function tree(arr = []) {
     }
   }
 
-  return { getRoot, prettyPrint, insert };
+  return { getRoot, prettyPrint, insert, deleteItem };
 }
 
-const numbers = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
+const numbers = [50, 30, 70, 20, 40, 60, 80];
 const t = tree(numbers);
-t.insert(5);
+t.deleteItem(50);
 t.prettyPrint(t.getRoot());
