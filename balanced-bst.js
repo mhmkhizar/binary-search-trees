@@ -1,3 +1,5 @@
+import { queue } from "./queue.js";
+
 function node(data) {
   return {
     data: data,
@@ -30,7 +32,7 @@ function tree(arr = []) {
   function _insertRec(data, curr) {
     if (curr === null) return node(data);
     if (data === curr.data) return curr;
-    const side = data < curr.data ? "left" : "right";
+    const side = data < curr.data ? `left` : `right`;
     curr[side] = _insertRec(data, curr[side]);
     return curr;
   }
@@ -64,11 +66,87 @@ function tree(arr = []) {
         ? (successorParent.right = successor.right)
         : (successorParent.left = successor.right);
     } else {
-      const side = data < curr.data ? "left" : "right";
+      const side = data < curr.data ? `left` : `right`;
       curr[side] = _deleteItemRec(data, curr[side]);
     }
     return curr;
   }
+
+  function find(value, curr = _root) {
+    if (curr === null) return curr;
+    if (curr.data === value) return curr;
+    const side = value < curr.data ? `left` : `right`;
+    return find(value, curr[side]);
+  }
+
+  function levelOrderForEach(callback) {
+    if (callback === undefined || typeof callback !== "function") {
+      throw new Error(`A callback function is required.`);
+    }
+    if (_root === null) return;
+    const q = queue();
+    q.enqueue(_root);
+    while (!q.isEmpty()) {
+      const curr = q.front();
+      callback(curr);
+      if (curr.left !== null) q.enqueue(curr.left);
+      if (curr.right !== null) q.enqueue(curr.right);
+      q.dequeue();
+    }
+  }
+
+  function inOrderForEach(callback) {
+    if (callback === undefined || typeof callback !== `function`) {
+      throw new Error(`A callback function is required.`);
+    }
+    if (_root === null) return;
+    _inOrderForEach(callback, _root);
+  }
+
+  function _inOrderForEach(callback, currentNode) {
+    if (currentNode === null) return;
+    _inOrderForEach(callback, currentNode.left);
+    callback(currentNode);
+    _inOrderForEach(callback, currentNode.right);
+  }
+
+  function preOrderForEach(callback) {
+    if (callback === undefined || typeof callback !== `function`) {
+      throw new Error(`A callback function is required.`);
+    }
+    if (_root === null) return;
+    _preOrderForEach(callback, _root);
+  }
+
+  function _preOrderForEach(callback, currentNode) {
+    if (currentNode === null) return;
+    callback(currentNode);
+    _preOrderForEach(callback, currentNode.left);
+    _preOrderForEach(callback, currentNode.right);
+  }
+
+  function postOrderForEach(callback) {
+    if (callback === undefined || typeof callback !== `function`) {
+      throw new Error(`A callback function is required.`);
+    }
+    if (_root === null) return;
+    _postOrderForEach(callback, _root);
+  }
+
+  function _postOrderForEach(callback, currentNode) {
+    if (currentNode === null) return;
+    _postOrderForEach(callback, currentNode.left);
+    _postOrderForEach(callback, currentNode.right);
+    callback(currentNode);
+  }
+
+  function height(value) {}
+
+  function depth(value) {}
+
+  function isBalanced() {}
+
+  function reBalance() {}
 
   function _buildTree(arr, start, end) {
     if (start > end) return null;
@@ -99,7 +177,7 @@ function tree(arr = []) {
     return result;
   }
 
-  function prettyPrint(node, prefix = "", isLeft = true) {
+  function prettyPrint(node, prefix = ``, isLeft = true) {
     if (node === null) {
       return;
     }
@@ -112,10 +190,20 @@ function tree(arr = []) {
     }
   }
 
-  return { getRoot, prettyPrint, insert, deleteItem };
+  return {
+    getRoot,
+    prettyPrint,
+    insert,
+    deleteItem,
+    find,
+    levelOrderForEach,
+    inOrderForEach,
+    preOrderForEach,
+    postOrderForEach,
+  };
 }
 
-const numbers = [50, 30, 70, 20, 40, 60, 80];
+const numbers = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const t = tree(numbers);
-t.deleteItem(50);
 t.prettyPrint(t.getRoot());
+t.inOrderForEach((node) => console.log(node.data));
