@@ -140,9 +140,32 @@ function tree(arr = []) {
     callback(currentNode);
   }
 
-  function height(value) {}
+  function height(value) {
+    if (value === undefined) return null;
+    const node = find(value);
+    if (node === null) return null;
+    return _heightRec(node) - 1;
+  }
 
-  function depth(value) {}
+  function _heightRec(currentNode) {
+    if (currentNode === null) return 0;
+    const left = _heightRec(currentNode.left);
+    const right = _heightRec(currentNode.right);
+    return Math.max(left, right) + 1;
+  }
+
+  function depth(value) {
+    if (value === undefined || _root === null) return null;
+    const node = find(value);
+    if (node === null) return null;
+    return _depthRec(value, _root);
+  }
+
+  function _depthRec(value, currentNode) {
+    if (currentNode === null || currentNode.data === value) return 0;
+    const side = value < currentNode.data ? `left` : `right`;
+    return _depthRec(value, currentNode[side]) + 1;
+  }
 
   function isBalanced() {}
 
@@ -200,10 +223,14 @@ function tree(arr = []) {
     inOrderForEach,
     preOrderForEach,
     postOrderForEach,
+    height,
+    depth,
   };
 }
 
 const numbers = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
 const t = tree(numbers);
+t.insert(2);
 t.prettyPrint(t.getRoot());
-t.inOrderForEach((node) => console.log(node.data));
+console.log(t.depth(234234));
+// t.postOrderForEach((c) => console.log(c.data));
