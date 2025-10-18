@@ -8,7 +8,7 @@ function node(data) {
   };
 }
 
-function tree(arr = []) {
+export function tree(arr = []) {
   const _uniqueArr = [...new Set(arr)];
   let _sortedArr = _mergeSort(_uniqueArr);
   let _root = _sortedArr.length
@@ -213,7 +213,7 @@ function tree(arr = []) {
     return result;
   }
 
-  function prettyPrint(node, prefix = ``, isLeft = true) {
+  function prettyPrint(node = _root, prefix = ``, isLeft = true) {
     if (node === null) {
       return;
     }
