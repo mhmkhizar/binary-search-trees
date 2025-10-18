@@ -9,10 +9,10 @@ function node(data) {
 }
 
 function tree(arr = []) {
-  const _unique = [...new Set(arr)];
-  const _sorted = _mergeSort(_unique);
-  let _root = _sorted.length
-    ? _buildTree(_sorted, 0, _sorted.length - 1)
+  const _uniqueArr = [...new Set(arr)];
+  let _sortedArr = _mergeSort(_uniqueArr);
+  let _root = _sortedArr.length
+    ? _buildTree(_sortedArr, 0, _sortedArr.length - 1)
     : null;
 
   function getRoot() {
@@ -167,9 +167,22 @@ function tree(arr = []) {
     return _depthRec(value, currentNode[side]) + 1;
   }
 
-  function isBalanced() {}
+  function isBalanced(curr = _root) {
+    if (curr === null) return true;
+    const left = _heightRec(curr.left);
+    const right = _heightRec(curr.right);
+    const diffOk = Math.abs(left - right) <= 1;
+    const leftOk = isBalanced(curr.left);
+    const rightOk = isBalanced(curr.right);
+    return diffOk && leftOk && rightOk;
+  }
 
-  function reBalance() {}
+  function reBalance() {
+    _sortedArr = [];
+    inOrderForEach((curr) => _sortedArr.push(curr.data));
+    _root = _buildTree(_sortedArr, 0, _sortedArr.length - 1);
+    return _root;
+  }
 
   function _buildTree(arr, start, end) {
     if (start > end) return null;
@@ -225,12 +238,7 @@ function tree(arr = []) {
     postOrderForEach,
     height,
     depth,
+    isBalanced,
+    reBalance,
   };
 }
-
-const numbers = [1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324];
-const t = tree(numbers);
-t.insert(2);
-t.prettyPrint(t.getRoot());
-console.log(t.depth(234234));
-// t.postOrderForEach((c) => console.log(c.data));
